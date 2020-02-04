@@ -1,219 +1,407 @@
-jQuery(document).ready(function($) {
 
-  // Accordion Toggle
-  var iconOpen = 'icon-minus', iconClose = 'icon-plus';
+$(document).ready(function () {
+    "use strict";
 
-  $(document).on('show.bs.collapse hide.bs.collapse', '.accordion', function(e) {
-    var $target = $(e.target)
-    $target.siblings('.accordion-heading')
-      .find('em').toggleClass(iconOpen + ' ' + iconClose);
-    if (e.type == 'show')
-      $target.prev('.accordion-heading').find('.accordion-toggle').addClass('active');
-    if (e.type == 'hide')
-      $(this).find('.accordion-toggle').not($target).removeClass('active');
-  });
+    var window_width = $(window).width(),
+        window_height = window.innerHeight,
+        header_height = $(".default-header").height(),
+        header_height_static = $(".site-header.static").outerHeight(),
+        fitscreen = window_height - header_height;
 
-  // DM Top
-  $(window).scroll(function() {
-    if ($(this).scrollTop() > 1) {
-      $('.dmtop').css({
-        bottom: "25px"
-      });
-    } else {
-      $('.dmtop').css({
-        bottom: "-100px"
-      });
+
+    $(".fullscreen").css("height", window_height)
+    $(".fitscreen").css("height", fitscreen);
+
+    if (document.getElementById("default-select")) {
+        $('select').niceSelect();
+    };
+    if (document.getElementById("service-select")) {
+        $('select').niceSelect();
+    };
+
+    $('.img-gal').magnificPopup({
+        type: 'image',
+        gallery: {
+            enabled: true
+        }
+    });
+
+
+    $('.play-btn').magnificPopup({
+        type: 'iframe',
+        mainClass: 'mfp-fade',
+        removalDelay: 160,
+        preloader: false,
+        fixedContentPos: false
+    });
+
+    //  Tilt Js
+    $('.single-feature').tilt({
+        maxTilt: 9,
+    });
+
+    $('.single-price').tilt({
+        maxTilt: 9,
+    });
+
+
+
+    // Initiate superfish on nav menu
+    $('.nav-menu').superfish({
+        animation: {
+            opacity: 'show'
+        },
+        speed: 400
+    });
+
+    // Mobile Navigation
+    if ($('#nav-menu-container').length) {
+        var $mobile_nav = $('#nav-menu-container').clone().prop({
+            id: 'mobile-nav'
+        });
+        $mobile_nav.find('> ul').attr({
+            'class': '',
+            'id': ''
+        });
+        $('body').append($mobile_nav);
+        $('body').prepend('<button type="button" id="mobile-nav-toggle"><i class="lnr lnr-menu"></i></button>');
+        $('body').append('<div id="mobile-body-overly"></div>');
+        $('#mobile-nav').find('.menu-has-children').prepend('<i class="lnr lnr-chevron-down"></i>');
+
+        $(document).on('click', '.menu-has-children i', function (e) {
+            $(this).next().toggleClass('menu-item-active');
+            $(this).nextAll('ul').eq(0).slideToggle();
+            $(this).toggleClass("lnr-chevron-up lnr-chevron-down");
+        });
+
+        $(document).on('click', '#mobile-nav-toggle', function (e) {
+            $('body').toggleClass('mobile-nav-active');
+            $('#mobile-nav-toggle i').toggleClass('lnr-cross lnr-menu');
+            $('#mobile-body-overly').toggle();
+        });
+
+        $(document).click(function (e) {
+            var container = $("#mobile-nav, #mobile-nav-toggle");
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                if ($('body').hasClass('mobile-nav-active')) {
+                    $('body').removeClass('mobile-nav-active');
+                    $('#mobile-nav-toggle i').toggleClass('lnr-cross lnr-menu');
+                    $('#mobile-body-overly').fadeOut();
+                }
+            }
+        });
+    } else if ($("#mobile-nav, #mobile-nav-toggle").length) {
+        $("#mobile-nav, #mobile-nav-toggle").hide();
     }
-  });
 
-  $('.dmtop').click(function() {
-    $('html, body').animate({
-      scrollTop: '0px'
-    }, 800);
-    return false;
-  });
+    // Smooth scroll for the menu and links with .scrollto classes
+    $('.nav-menu a, #mobile-nav a, .scrollto').on('click', function () {
+        if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+            var target = $(this.hash);
+            if (target.length) {
+                var top_space = 0;
 
-  // DM Menu
-  $('#nav').affix({
-    offset: {
-      top: $('#nav').offset().top
+                if ($('#header').length) {
+                    top_space = $('#header').outerHeight();
+
+                    if (!$('#header').hasClass('header-fixed')) {
+                        top_space = top_space;
+                    }
+                }
+
+                $('html, body').animate({
+                    scrollTop: target.offset().top - top_space
+                }, 1500, 'easeInOutExpo');
+
+                if ($(this).parents('.nav-menu').length) {
+                    $('.nav-menu .menu-active').removeClass('menu-active');
+                    $(this).closest('li').addClass('menu-active');
+                }
+
+                if ($('body').hasClass('mobile-nav-active')) {
+                    $('body').removeClass('mobile-nav-active');
+                    $('#mobile-nav-toggle i').toggleClass('lnr-times lnr-bars');
+                    $('#mobile-body-overly').fadeOut();
+                }
+                return false;
+            }
+        }
+    });
+
+
+    $(document).ready(function () {
+
+        $('html, body').hide();
+
+        if (window.location.hash) {
+
+            setTimeout(function () {
+
+                $('html, body').scrollTop(0).show();
+
+                $('html, body').animate({
+
+                    scrollTop: $(window.location.hash).offset().top - 108
+
+                }, 1000)
+
+            }, 0);
+
+        }
+
+        else {
+
+            $('html, body').show();
+
+        }
+
+    });
+
+
+    // Header scroll class
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 50) {
+            $('#header').addClass('header-scrolled');
+        } else {
+            $('#header').removeClass('header-scrolled');
+        }
+    });
+
+    // Owl Carousel
+    if ($('.testi-slider').length) {
+        $('.testi-slider').owlCarousel({
+            loop: true,
+            margin: 30,
+            items: 1,
+            nav: false,
+            autoplay: 2500,
+            smartSpeed: 1500,
+            dots: true,
+            responsiveClass: true,
+            thumbs: true,
+            thumbsPrerendered: true,
+            navText: ["<i class='lnr lnr-arrow-left'></i>", "<i class='lnr lnr-arrow-right'></i>"]
+        })
     }
-  });
 
-  // Menu
-  $(".panel a").click(function(e) {
-    e.preventDefault();
-    var style = $(this).attr("class");
-    $(".jetmenu").removeAttr("class").addClass("jetmenu").addClass(style);
-  });
-  $().jetmenu();
-
-  // Facts
-  function count($this) {
-    var current = parseInt($this.html(), 10);
-    current = current + 1; /* Where 50 is increment */
-
-    $this.html(++current);
-    if (current > $this.data('count')) {
-      $this.html($this.data('count'));
-    } else {
-      setTimeout(function() {
-        count($this)
-      }, 50);
+    $('.active-realated-carusel').owlCarousel({
+        items: 1,
+        loop: true,
+        margin: 100,
+        dots: true,
+        nav: true,
+        navText: ["<span class='lnr lnr-arrow-up'></span>", "<span class='lnr lnr-arrow-down'></span>"],
+        autoplay: true,
+        responsive: {
+            0: {
+                items: 1
+            },
+            480: {
+                items: 1,
+            },
+            768: {
+                items: 1,
+            }
+        }
+    });
+    if ($('.owl-screenshot').length) {
+        $('.owl-screenshot').owlCarousel({
+            loop: true,
+            margin: 30,
+            items: 4,
+            nav: false,
+            // autoplay: 2500,
+            smartSpeed: 1500,
+            dots: false,
+            responsive: {
+                0: {
+                    items: 1,
+                    margin: 80
+                },
+                576: {
+                    items: 2
+                },
+                767: {
+                    items: 3
+                },
+                1199: {
+                    items: 4
+                }
+            }
+        })
     }
-  }
 
-  $(".stat-count").each(function() {
-    $(this).data('count', parseInt($(this).html(), 10));
-    $(this).html('0');
-    count($(this));
-  });
 
-  // Tooltip
-  $('.social_buttons, .client').tooltip({
-    selector: "a[data-toggle=tooltip]"
-  })
-
-  $('.social_buttons, .client').tooltip();
-
-  // prettyPhoto
-  $(document).ready(function() {
-    $('a[data-gal]').each(function() {
-      $(this).attr('rel', $(this).data('gal'));
+    $('.active-about-carusel').owlCarousel({
+        items: 1,
+        loop: true,
+        margin: 100,
+        nav: true,
+        navText: ["<span class='lnr lnr-arrow-up'></span>",
+            "<span class='lnr lnr-arrow-down'></span>"],
+        responsive: {
+            0: {
+                items: 1
+            },
+            480: {
+                items: 1,
+            },
+            768: {
+                items: 1,
+            }
+        }
     });
-    $("a[data-rel^='prettyPhoto']").prettyPhoto({
-      animationSpeed: 'slow',
-      theme: 'light_square',
-      slideshow: false,
-      overlay_gallery: false,
-      social_tools: false,
-      deeplinking: false
+
+
+    $('.active-review-carusel').owlCarousel({
+        items: 1,
+        loop: true,
+        autoplay: true,
+        margin: 30,
+        dots: true
     });
-  });
 
-  // Hover and Carousel
-  $('.owl-carousel > .item ').each(function() {
-    $(this).hoverdir();
-  });
-  $("#owl-demo").owlCarousel({
-    items: 5,
-    autoPlay: 3000, //Set AutoPlay to 3 seconds
-    stopOnHover: true,
-    lazyLoad: true,
-    transitionStyle: "fade",
-    navigation: true,
-    pagination: false,
-  });
-
-  // tooltip demo
-  $("[data-toggle=tooltip]").tooltip();
-
-  // popover demo
-  $("[data-toggle=popover]").popover();
-
-  // Chart Effects;
-	$('.chart').easyPieChart({
-		easing: 'easeOutBounce',
-		size : 180,
-		animate : 2000,
-		lineWidth : 10,
-		lineCap : 'square',
-		lineWidth : 18,
-		barColor : '#3498db',
-		trackColor : '#f9f9f9',
-		scaleColor : false,
-		onStep: function(from, to, percent) {
-		$(this.el).find('.percent').text(Math.round(percent)+'%');
-		}
-	});
-
-  // Popular Items Carousel
-  $(document).ready(function() {
-    $("#popularitems").owlCarousel({
-      items: 3,
-      lazyLoad: true,
-      navigation: false
+    $('.active-info-carusel').owlCarousel({
+        items: 1,
+        loop: true,
+        margin: 100,
+        dots: true,
+        autoplay: true,
+        responsive: {
+            0: {
+                items: 1
+            },
+            480: {
+                items: 1,
+            },
+            768: {
+                items: 1,
+            }
+        }
     });
-  });
 
-  // Hover and Carousel on Home #1
-  $('.owl-carousel > .item ').each(function() {
-    $(this).hoverdir();
-  });
 
-  $("#owl-related").owlCarousel({
-    items: 3,
-    autoPlay: 3000, //Set AutoPlay to 3 seconds
-    stopOnHover: true,
-    lazyLoad: true,
-    transitionStyle: "fade",
-    navigation: true,
-    pagination: false,
-  });
-
-  // Portfolio
-  var $container = $('.portfolio'),
-    $items = $container.find('.market-item'),
-    portfolioLayout = 'fitRows';
-
-  if ($container.hasClass('portfolio-centered')) {
-    portfolioLayout = 'masonry';
-  }
-
-  $container.isotope({
-    filter: '*',
-    animationEngine: 'best-available',
-    layoutMode: portfolioLayout,
-    animationOptions: {
-      duration: 750,
-      easing: 'linear',
-      queue: false
-    },
-    masonry: {}
-  }, refreshWaypoints());
-
-  function refreshWaypoints() {
-    setTimeout(function() {}, 1000);
-  }
-
-  $('nav.portfolio-filter ul a').on('click', function() {
-    var selector = $(this).attr('data-filter');
-    $container.isotope({
-      filter: selector
-    }, refreshWaypoints());
-    $('nav.portfolio-filter ul a').removeClass('active');
-    $(this).addClass('active');
-    return false;
-  });
-
-  function getColumnNumber() {
-    var winWidth = $(window).width(),
-      columnNumber = 2;
-  }
-
-  function setColumns() {
-    var winWidth = $(window).width(),
-      columnNumber = getColumnNumber(),
-      itemWidth = Math.floor(winWidth / columnNumber);
-
-    $container.find('.market-item').each(function() {
-      $(this).css({
-        width: itemWidth + 'px'
-      });
+    $('.active-testimonial').owlCarousel({
+        items: 2,
+        loop: true,
+        margin: 30,
+        dots: true,
+        autoplay: true,
+        nav: true,
+        navText: ["<span class='lnr lnr-arrow-up'></span>", "<span class='lnr lnr-arrow-down'></span>"],
+        responsive: {
+            0: {
+                items: 1
+            },
+            480: {
+                items: 1,
+            },
+            768: {
+                items: 2,
+            }
+        }
     });
-  }
 
-  function setPortfolio() {
-    setColumns();
-    $container.isotope('reLayout');
-  }
 
-  $container.imagesLoaded(function() {
-    setPortfolio();
-  });
+    $('.active-testimonials-slider').owlCarousel({
+        items: 3,
+        loop: true,
+        margin: 30,
+        dots: true,
+        autoplay: true,
+        responsive: {
+            0: {
+                items: 1
+            },
+            480: {
+                items: 1,
+            },
+            768: {
+                items: 2,
+            },
+            801: {
+                items: 3,
+            }
+        }
+    });
 
-  $(window).on('resize', function() {
-    setPortfolio();
-  });
+
+    $('.active-fixed-slider').owlCarousel({
+        items: 3,
+        loop: true,
+        dots: true,
+        nav: true,
+        navText: ["<span class='lnr lnr-arrow-up'></span>",
+            "<span class='lnr lnr-arrow-down'></span>"],
+        responsive: {
+            0: {
+                items: 1
+            },
+            480: {
+                items: 1,
+            },
+            768: {
+                items: 2,
+            },
+            900: {
+                items: 3,
+            }
+
+        }
+    });
+
+
+
+
+    //  Start Google map 
+
+    // When the window has finished loading create our google map below
+
+    if (document.getElementById("map")) {
+
+        google.maps.event.addDomListener(window, 'load', init);
+
+        function init() {
+            // Basic options for a simple Google Map
+            // For more options see: https://developers.google.com/maps/documentation/javascript/reference#MapOptions
+            var mapOptions = {
+                // How zoomed in you want the map to start at (always required)
+                zoom: 11,
+
+                // The latitude and longitude to center the map (always required)
+                center: new google.maps.LatLng(40.6700, -73.9400), // New York
+
+                // How you would like to style the map. 
+                // This is where you would paste any style found on Snazzy Maps.
+                styles: [{ "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#e9e9e9" }, { "lightness": 17 }] }, { "featureType": "landscape", "elementType": "geometry", "stylers": [{ "color": "#f5f5f5" }, { "lightness": 20 }] }, { "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{ "color": "#ffffff" }, { "lightness": 17 }] }, { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "color": "#ffffff" }, { "lightness": 29 }, { "weight": 0.2 }] }, { "featureType": "road.arterial", "elementType": "geometry", "stylers": [{ "color": "#ffffff" }, { "lightness": 18 }] }, { "featureType": "road.local", "elementType": "geometry", "stylers": [{ "color": "#ffffff" }, { "lightness": 16 }] }, { "featureType": "poi", "elementType": "geometry", "stylers": [{ "color": "#f5f5f5" }, { "lightness": 21 }] }, { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#dedede" }, { "lightness": 21 }] }, { "elementType": "labels.text.stroke", "stylers": [{ "visibility": "on" }, { "color": "#ffffff" }, { "lightness": 16 }] }, { "elementType": "labels.text.fill", "stylers": [{ "saturation": 36 }, { "color": "#333333" }, { "lightness": 40 }] }, { "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }, { "featureType": "transit", "elementType": "geometry", "stylers": [{ "color": "#f2f2f2" }, { "lightness": 19 }] }, { "featureType": "administrative", "elementType": "geometry.fill", "stylers": [{ "color": "#fefefe" }, { "lightness": 20 }] }, { "featureType": "administrative", "elementType": "geometry.stroke", "stylers": [{ "color": "#fefefe" }, { "lightness": 17 }, { "weight": 1.2 }] }]
+            };
+
+            // Get the HTML DOM element that will contain your map 
+            // We are using a div with id="map" seen below in the <body>
+            var mapElement = document.getElementById('map');
+
+            // Create the Google Map using our element and options defined above
+            var map = new google.maps.Map(mapElement, mapOptions);
+
+            // Let's also add a marker while we're at it
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(40.6700, -73.9400),
+                map: map,
+                title: 'Snazzy!'
+            });
+        }
+    }
+
+
+    $(document).ready(function () {
+        $('#mc_embed_signup').find('form').ajaxChimp();
+    });
+
+
+
+
+
+
+
 
 });
