@@ -676,8 +676,8 @@ td, th {
     -ms-flex-direction: column !important;
     flex-direction: column !important; } }
 .buttons {
-  padding: 20px 24px 8px;
-  max-width: 225px;
+  padding: 20px 18px 8px;
+  max-width: 278px;
   margin-right: 10px;
   border: 1px solid #dddddd;
   -webkit-transition: all 0.3s ease 0s;
@@ -1865,7 +1865,8 @@ body.mobile-nav-active #mobile-nav-toggle {
   background: url(../img/home-banner-bg.jpg) center;
   background-size: cover; }
   .home-banner-area .banner-img {
-    text-align: right; }
+    text-align: right; 
+          margin-top: 75px;}
     @media (max-width: 1440px) {
       .home-banner-area .banner-img {
         text-align: left; }
